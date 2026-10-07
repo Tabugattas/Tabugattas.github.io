@@ -37,6 +37,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .seal-link:hover,.seal-link:focus-visible{transform:scale(1.04);filter:brightness(1.03)}
 .seal{display:block;width:100%;height:100%;overflow:visible}
 
+/* envelope opening */
+.env-flap{overflow:visible}
+.flap-layer{position:absolute;inset:0;transform-origin:50% 0;transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
+.env-card{
+  position:absolute;left:50%;top:72cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
+  transform:translateX(-50%);background:#fbfaf7;padding:1.4cqh;
+  display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
+  transition:top 1.7s cubic-bezier(.25,.7,.3,1) 2.2s,transform 1s ease;
+}
+.env-card img{display:block;width:100%;flex:1 1 auto;min-height:0;object-fit:cover}
+.env-card-text{display:flex;flex-direction:column;align-items:center;padding:2cqh 0 1cqh;color:#204a86;text-align:center}
+.ec-head{display:flex;flex-direction:column;align-items:stretch;width:max-content}
+.ec-std{font:400 4.6cqh/1.1 "Gilda Display",serif;letter-spacing:.01em}
+.ec-dash{display:block;height:2px;border-radius:2px;background:linear-gradient(90deg,#d9b56a,#f3dc9c 50%,#c99a4c);margin:.9cqh 0}
+.ec-date{font:500 3cqh/1 "Cormorant SC",serif;margin-top:1cqh;letter-spacing:.02em}
+#page-envelope.is-opening .seal-link{transform:scale(.85);opacity:0;pointer-events:none;transition:transform .45s ease,opacity .45s ease}
+#page-envelope.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg)}
+#page-envelope.is-opening .env-card{top:5cqh}
+#page-envelope.is-leaving{animation:fadeOut .7s ease both}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+#page-envelope.is-leaving .env-card{transform:translateX(-50%) scale(1.2)}
+@media (prefers-reduced-motion:reduce){.flap-layer,.env-card{transition:none}}
+
 /* ================= PAGE 2 : INVITATION ================= */
 #page-invitation{
   --u:min(100vw, 540px);           /* width of the centre column  */
@@ -64,7 +87,8 @@ section{position:relative;overflow:hidden}
   padding:0 calc(var(--hu) * .04);
   color:#204a86;text-align:center;
 }
-.gold-dash{display:block;width:calc(var(--hu)*.09);height:max(2px, calc(var(--hu)*.006));border-radius:2px;background:linear-gradient(90deg,#d9b56a,#f3dc9c 50%,#c99a4c);margin:calc(var(--hu)*.045) 0}
+.std-block{display:flex;flex-direction:column;align-items:stretch;width:max-content}
+.gold-dash{display:block;width:auto;height:max(2px, calc(var(--hu)*.006));border-radius:2px;background:linear-gradient(90deg,#d9b56a,#f3dc9c 50%,#c99a4c);margin:calc(var(--hu)*.045) 0}
 .std{font:400 calc(var(--hu)*.155)/1.12 "Gilda Display",serif;letter-spacing:.01em}
 .std-date{font:500 calc(var(--hu)*.118)/1 "Cormorant SC",serif;margin-top:calc(var(--hu)*.07);letter-spacing:.02em}
 .std-names{font:400 calc(var(--hu)*.17)/1 "Pinyon Script",cursive;margin-top:calc(var(--hu)*.07);white-space:nowrap}

@@ -102,6 +102,7 @@
     var inv = page === "invitation";
     envelope.classList.toggle("is-active", !inv);
     invitation.classList.toggle("is-active", inv);
+    envelope.classList.remove("is-opening", "is-leaving");
     window.scrollTo(0, 0);
     if (inv) { if (!playing) playMusic(); }
     else pauseMusic(true);
@@ -109,11 +110,22 @@
 
   function route() { show(location.hash === "#invitation" ? "invitation" : "envelope"); }
 
-  document.getElementById("open-invitation").addEventListener("click", function (e) {
-    e.preventDefault();
-    playMusic(); // inside the click so the browser allows sound
+  var opening = false;
+  function openInvitation() {
+    opening = false;
     if (location.hash !== "#invitation") history.pushState(null, "", "#invitation");
     show("invitation");
+  }
+
+  document.getElementById("open-invitation").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (opening) return;
+    playMusic(); // inside the click so the browser allows sound
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { openInvitation(); return; }
+    opening = true;
+    envelope.classList.add("is-opening");
+    setTimeout(function () { envelope.classList.add("is-leaving"); }, 4000);
+    setTimeout(openInvitation, 4700);
   });
 
   document.getElementById("go-back").addEventListener("click", function (e) {
