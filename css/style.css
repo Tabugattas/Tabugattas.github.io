@@ -46,7 +46,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   position:absolute;left:50%;top:5cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
   transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;will-change:transform;
   display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
-  transition:transform 1.5s cubic-bezier(.25,.7,.3,1) 2.2s;
+  transition:transform 3s cubic-bezier(.25,.7,.3,1) .9s;
   will-change:transform;
 }
 .env-card img{display:block;width:100%;flex:1 1 auto;min-height:0;object-fit:cover}
