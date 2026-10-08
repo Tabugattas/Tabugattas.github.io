@@ -111,9 +111,18 @@
   // ---------- Page switching ----------
   function show(page) {
     var inv = page === "invitation";
+    if (!inv) {
+      // reset the envelope instantly (no backwards animation)
+      envelope.classList.add("no-anim");
+      envelope.classList.remove("is-opening", "is-leaving");
+      void envelope.offsetWidth;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { envelope.classList.remove("no-anim"); });
+      });
+    }
     envelope.classList.toggle("is-active", !inv);
     invitation.classList.toggle("is-active", inv);
-    envelope.classList.remove("is-opening", "is-leaving");
+    envelope.inert = inv; // hidden envelope can't be tabbed to or tapped
     window.scrollTo(0, 0);
     if (inv) { if (!playing) playMusic(); }
     else pauseMusic(true);
