@@ -5,6 +5,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 .page{display:none}
 .page.is-active{display:block;animation:fadeIn .3s ease both}
+#page-envelope:not(.is-active){display:block;opacity:0;pointer-events:none}
+#page-envelope.is-active{animation:none}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ================= PAGE 1 : ENVELOPE ================= */
@@ -62,6 +64,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 #page-envelope.is-leaving .env-card{transform:translateX(-50%) scale(1.2)}
 @media (prefers-reduced-motion:reduce){.flap-layer,.env-card{transition:none}}
+#page-envelope.no-anim,#page-envelope.no-anim *{transition:none!important;animation:none!important}
 
 /* ================= PAGE 2 : INVITATION ================= */
 #page-invitation{
