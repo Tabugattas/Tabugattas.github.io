@@ -138,8 +138,8 @@
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { openInvitation(); return; }
     opening = true;
     envelope.classList.add("is-opening");
-    setTimeout(function () { envelope.classList.add("is-leaving"); }, 3000);
-    setTimeout(openInvitation, 3700);
+    setTimeout(function () { envelope.classList.add("is-leaving"); }, 4000);
+    setTimeout(openInvitation, 4700);
   });
 
   document.getElementById("go-back").addEventListener("click", function (e) {
