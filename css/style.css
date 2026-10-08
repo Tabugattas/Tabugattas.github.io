@@ -4,7 +4,7 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 .page{display:none}
-.page.is-active{display:block;animation:fadeIn .6s ease both}
+.page.is-active{display:block;animation:fadeIn .3s ease both}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ================= PAGE 1 : ENVELOPE ================= */
@@ -33,18 +33,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   font:400 min(7cqw, 22vw)/1 "Herr Von Muellerhoff",cursive;
   color:#51463e;text-align:center;white-space:nowrap;
 }
-.seal-link{position:absolute;left:44.75%;top:53.3%;width:9.6%;height:23.6%;cursor:pointer;transition:transform .25s ease,filter .25s ease;-webkit-tap-highlight-color:transparent}
-.seal-link:hover,.seal-link:focus-visible{transform:scale(1.04);filter:brightness(1.03)}
+.seal-link{position:absolute;left:44.75%;top:53.3%;width:9.6%;height:23.6%;cursor:pointer;transition:transform .25s ease;-webkit-tap-highlight-color:transparent}
+.seal-link:focus-visible{transform:scale(1.04)}
+@media (hover:hover){.seal-link:hover{transform:scale(1.04)}}
 .seal{display:block;width:100%;height:100%;overflow:visible}
 
 /* envelope opening */
 .env-flap{overflow:visible}
-.flap-layer{position:absolute;inset:0;transform-origin:50% 0;transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
+.flap-layer{position:absolute;inset:0;transform-origin:50% 0;
+            transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
 .env-card{
-  position:absolute;left:50%;top:72cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
-  transform:translateX(-50%);background:#fbfaf7;padding:1.4cqh;
+  position:absolute;left:50%;top:5cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
+  transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;will-change:transform;
   display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
-  transition:top 1.7s cubic-bezier(.25,.7,.3,1) 2.2s,transform 1s ease;
+  transition:transform 1.7s cubic-bezier(.25,.7,.3,1) 2.2s;
+  will-change:transform;
 }
 .env-card img{display:block;width:100%;flex:1 1 auto;min-height:0;object-fit:cover}
 .env-card-text{display:flex;flex-direction:column;align-items:center;padding:2cqh 0 1cqh;color:#204a86;text-align:center}
@@ -54,8 +57,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ec-date{font:500 3cqh/1 "Cormorant SC",serif;margin-top:1cqh;letter-spacing:.02em}
 #page-envelope.is-opening .seal-link{transform:scale(.85);opacity:0;pointer-events:none;transition:transform .45s ease,opacity .45s ease}
 #page-envelope.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg)}
-#page-envelope.is-opening .env-card{top:5cqh}
-#page-envelope.is-leaving{animation:fadeOut .7s ease both}
+#page-envelope.is-opening .env-card{transform:translate(-50%,0)}
+#page-envelope.is-leaving .env-card{transform:translate(-50%,0) scale(1.2);transition:transform 1s ease}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 #page-envelope.is-leaving .env-card{transform:translateX(-50%) scale(1.2)}
 @media (prefers-reduced-motion:reduce){.flap-layer,.env-card{transition:none}}
