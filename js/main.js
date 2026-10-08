@@ -1,6 +1,17 @@
 (function () {
   "use strict";
-  var cfg = window.SITE_CONFIG || {};
+ var cfg = window.SITE_CONFIG || {};
+
+  // Preload page 2 images while the envelope animates so the switch is smooth
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      ["hero-background","hero-photo","passport-background","strip-1","strip-2","strip-3",
+       "countdown-background","countdown-card","final-background","final-photo"].forEach(function (n) {
+        var i = new Image(); i.src = "images/" + n + ".jpg";
+        if (i.decode) i.decode().catch(function () {});
+      });
+    }, 300);
+  });
 
   var envelope = document.getElementById("page-envelope");
   var invitation = document.getElementById("page-invitation");
@@ -108,12 +119,15 @@
     else pauseMusic(true);
   }
 
-  function route() { show(location.hash === "#invitation" ? "invitation" : "envelope"); }
+  function route() {
+    var h = location.hash.toLowerCase();
+    show(h === "#savethedate2" || h === "#invitation" ? "invitation" : "envelope");
+  }
 
   var opening = false;
   function openInvitation() {
     opening = false;
-    if (location.hash !== "#invitation") history.pushState(null, "", "#invitation");
+    if (location.hash !== "#SavetheDate2") history.pushState(null, "", "#SavetheDate2");
     show("invitation");
   }
 
