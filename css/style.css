@@ -41,7 +41,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* envelope opening */
 .env-flap{overflow:visible}
 .flap-layer{position:absolute;inset:0;transform-origin:50% 0;
-            transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform;transition:transform 1.6s cubic-bezier(.55,.05,.35,1) .45s}
+            transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
 .env-card{
   position:absolute;left:50%;top:5cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
   transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;will-change:transform;
