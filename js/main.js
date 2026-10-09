@@ -2,16 +2,38 @@
   "use strict";
  var cfg = window.SITE_CONFIG || {};
 
-  // Preload page 2 images while the envelope animates so the switch is smooth
-  window.addEventListener("load", function () {
-    setTimeout(function () {
-      ["hero-background","hero-photo","passport-background","strip-1","strip-2","strip-3",
-       "countdown-background","countdown-card","final-background","final-photo"].forEach(function (n) {
-        var i = new Image(); i.src = "images/" + n + ".jpg";
-        if (i.decode) i.decode().catch(function () {});
-      });
-    }, 300);
+  // Warm up only the first screen immediately; external fonts/music must not
+  // delay it, and decoding every later image competes with the opening animation.
+  ["hero-background", "hero-photo"].forEach(function (name) {
+    var image = new Image();
+    image.fetchPriority = "high";
+    image.src = "images/" + name + ".jpg";
   });
+
+  function loadSectionAssets(section) {
+    section.querySelectorAll("[data-background]").forEach(function (el) {
+      el.style.backgroundImage = 'url("' + el.dataset.background + '")';
+      el.removeAttribute("data-background");
+    });
+    section.querySelectorAll("image[data-src]").forEach(function (el) {
+      el.setAttribute("href", el.dataset.src);
+      el.removeAttribute("data-src");
+    });
+  }
+
+  var panels = document.querySelectorAll("#page-invitation .panel");
+  if ("IntersectionObserver" in window) {
+    var assetObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        loadSectionAssets(entry.target);
+        assetObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "100% 0px" });
+    panels.forEach(function (panel) { assetObserver.observe(panel); });
+  } else {
+    panels.forEach(loadSectionAssets);
+  }
 
   var envelope = document.getElementById("page-envelope");
   var invitation = document.getElementById("page-invitation");
@@ -32,7 +54,10 @@
     return m ? m[1] : (/^[\w-]{11}$/.test(s) ? s : "");
   }
 
-  if (ytId) {
+  var youtubeRequested = false;
+  function loadYouTube() {
+    if (youtubeRequested) return;
+    youtubeRequested = true;
     window.onYouTubeIframeAPIReady = function () {
       ytPlayer = new YT.Player("yt-player", {
         width: 200, height: 200, videoId: ytId,
@@ -53,7 +78,9 @@
     var tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
-  } else if (cfg.musicFile) {
+  }
+
+  if (!ytId && cfg.musicFile) {
     audio.src = cfg.musicFile;
     audio.volume = volume;
   }
@@ -66,6 +93,7 @@
     wantPlay = true;
     clearInterval(fadeTimer);
     if (ytId) {
+      loadYouTube();
       if (ytReady) { ytPlayer.setVolume(Math.round(volume * 100)); ytPlayer.playVideo(); }
       return;
     }
@@ -109,22 +137,25 @@
   window.weddingMusic = { isPlaying: function () { return playing; } };
 
   // ---------- Page switching ----------
+  var opening = false, openingTimer = null;
+  var card = envelope.querySelector(".env-card");
+
   function show(page) {
     var inv = page === "invitation";
-    if (!inv) {
-      // reset the envelope instantly (no backwards animation)
-      envelope.classList.add("no-anim");
-      envelope.classList.remove("is-opening", "is-leaving");
-      void envelope.offsetWidth;
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { envelope.classList.remove("no-anim"); });
-      });
-    }
+    clearTimeout(openingTimer);
+    opening = false;
+    // Keep transitions disabled until the next opening. Flush the closed state
+    // before revealing the envelope so no stale animation can paint behind the map.
+    envelope.classList.add("no-anim");
+    envelope.classList.remove("is-opening", "is-leaving");
     envelope.classList.toggle("is-active", !inv);
+    invitation.classList.remove("is-revealing");
     invitation.classList.toggle("is-active", inv);
-    envelope.inert = inv; // hidden envelope can't be tabbed to or tapped
+    void card.offsetWidth;
+    envelope.inert = inv;
+    invitation.inert = !inv;
     window.scrollTo(0, 0);
-    if (inv) { if (!playing) playMusic(); }
+    if (inv) { if (!playing) armFirstInteraction(); }
     else pauseMusic(true);
   }
 
@@ -133,9 +164,8 @@
     show(h === "#savethedate2" || h === "#invitation" ? "invitation" : "envelope");
   }
 
-  var opening = false;
   function openInvitation() {
-    opening = false;
+    if (!opening) return;
     if (location.hash !== "#SavetheDate2") history.pushState(null, "", "#SavetheDate2");
     show("invitation");
   }
@@ -144,11 +174,20 @@
     e.preventDefault();
     if (opening) return;
     playMusic(); // inside the click so the browser allows sound
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { openInvitation(); return; }
     opening = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { openInvitation(); return; }
+    envelope.classList.remove("no-anim");
+    void card.offsetWidth;
+    // Render the destination underneath the envelope for the final crossfade.
+    invitation.classList.add("is-active", "is-revealing");
+    invitation.inert = true;
     envelope.classList.add("is-opening");
-    setTimeout(function () { envelope.classList.add("is-leaving"); }, 4000);
-    setTimeout(openInvitation, 4700);
+    // Fallback for browsers that fail to deliver animationend.
+    openingTimer = setTimeout(openInvitation, 3800);
+  });
+
+  card.addEventListener("animationend", function (e) {
+    if (e.animationName === "cardOpen") openInvitation();
   });
 
   document.getElementById("go-back").addEventListener("click", function (e) {

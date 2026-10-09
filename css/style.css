@@ -10,7 +10,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ================= PAGE 1 : ENVELOPE ================= */
-#page-envelope{position:fixed;inset:0;overflow:hidden;background:#e8e6e2}
+#page-envelope{z-index:10;position:fixed;inset:0;overflow:hidden;background:#e8e6e2}
 .stage{
   position:absolute;left:50%;top:50%;
   width:max(100vw, calc(100vh * 1568 / 788));
@@ -48,7 +48,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   position:absolute;left:50%;top:5cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
   transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;will-change:transform;
   display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
-  transition:transform 3s cubic-bezier(.25,.7,.3,1) .9s;
   will-change:transform;
 }
 .env-card img{display:block;width:100%;flex:1 1 auto;min-height:0;object-fit:cover}
@@ -59,10 +58,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ec-date{font:500 3cqh/1 "Cormorant SC",serif;margin-top:1cqh;letter-spacing:.02em}
 #page-envelope.is-opening .seal-link{transform:scale(.85);opacity:0;pointer-events:none;transition:transform .45s ease,opacity .45s ease}
 #page-envelope.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg)}
-#page-envelope.is-opening .env-card{transform:translate(-50%,0)}
-#page-envelope.is-leaving .env-card{transform:translate(-50%,0) scale(1.2);transition:transform 1s ease}
-@keyframes fadeOut{from{opacity:1}to{opacity:0}}
-#page-envelope.is-leaving .env-card{transform:translateX(-50%) scale(1.2)}
+/* One timeline: lift, advance, then blend into the live invitation. */
+#page-envelope.is-opening .env-card{animation:cardOpen 2.6s linear .9s both}
+#page-envelope.is-opening{animation:envelopeHandoff .35s linear 3.15s forwards}
+#page-invitation.is-revealing{animation:none}
+@keyframes cardOpen{
+  0%{transform:translate(-50%,108.06%) scale(1)}
+  65%{transform:translate(-50%,0) scale(1)}
+  100%{transform:translate(-50%,0) scale(1.2)}
+}
+@keyframes envelopeHandoff{from{opacity:1}to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.flap-layer,.env-card{transition:none}}
 #page-envelope.no-anim,#page-envelope.no-anim *{transition:none!important;animation:none!important}
 
@@ -155,3 +160,19 @@ section{position:relative;overflow:hidden}
 
 @media (max-width:1100px){#page-invitation{--hshift:calc(var(--hu) * -.225)}}
 @media (max-width:600px){#page-invitation{--hu:calc(100vw / 2.2);--hshift:calc(var(--hu) * -.27)}}
+
+/* Each section fills the visible viewport on phones and desktops. Fit the
+   artwork within that space without cropping the card or stretching its text. */
+#page-invitation .hero{
+  min-height:100vh;height:100vh;min-height:100dvh;height:100dvh;
+  --hu:min(540px, calc(100vw / 2.1), calc(100dvh / 1.85))
+}
+#page-invitation .hero-photo{top:50%;height:calc(var(--hu) * 1.85);transform:translateY(-50%)}
+#page-invitation .panel{
+  min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;
+  --u:min(100vw, 540px, calc(100dvh / 1.92))
+}
+#page-invitation .passport{--u:min(100vw, 540px, calc(100dvh / 2.04))}
+@media (max-width:600px){
+  #page-invitation .hero{--hu:min(calc(100vw / 2.2), calc(100dvh / 1.85))}
+}
