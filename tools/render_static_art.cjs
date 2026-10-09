@@ -15,6 +15,11 @@ const artwork = [
 ];
 (async () => {
   const server = http.createServer((req, res) => {
+    if (req.url === '/__art-preview') {
+      res.setHeader('Content-Type', 'text/html');
+      res.end('<!doctype html><html><body></body></html>');
+      return;
+    }
     const file = path.resolve(root, '.' + new URL(req.url, 'http://localhost').pathname);
     if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
       res.writeHead(404).end();
@@ -33,8 +38,23 @@ const artwork = [
     for (const art of artwork) {
       const page = await browser.newPage({ viewport: { width: art.width, height: art.height }, deviceScaleFactor: art.scale });
       const svg = fs.readFileSync(path.join(root, 'partials', art.name + '.svg'), 'utf8');
+      // Give the document the same origin as the fonts before inserting artwork.
+      // An about:blank document blocks these fonts and silently exports fallbacks.
+      await page.goto(base + '__art-preview');
       await page.setContent(`<base href="${base}"><link rel="stylesheet" href="css/fonts.css"><style>*{margin:0}svg{display:block;width:${art.width}px;height:${art.height}px;overflow:visible}</style>${svg}`, { waitUntil: 'networkidle' });
-      await page.evaluate(() => document.fonts.ready);
+      await page.evaluate(async () => {
+        await document.fonts.ready;
+        for (const text of document.querySelectorAll('svg text')) {
+          const style = getComputedStyle(text);
+          const family = style.fontFamily.split(',')[0].trim().replace(/['"]/g, '');
+          const faces = [...document.fonts].filter(face => face.family.replace(/['"]/g, '') === family);
+          if (!faces.length) continue; // System fonts, such as Arial.
+          const loaded = await document.fonts.load(`${style.fontWeight} ${style.fontSize} "${family}"`, text.textContent);
+          if (!loaded.length || loaded.some(face => face.status !== 'loaded')) {
+            throw new Error(`Cannot export artwork without its original font: ${family}`);
+          }
+        }
+      });
       const png = path.join(temp, art.name + '.png');
       await page.screenshot({ path: png, omitBackground: true });
       execFileSync('python3', ['-c', 'from PIL import Image;import sys;Image.open(sys.argv[1]).save(sys.argv[2],"WEBP",quality=int(sys.argv[3]),method=6)', png, path.join(root, 'images', art.name + '.webp'), String(art.quality)]);
