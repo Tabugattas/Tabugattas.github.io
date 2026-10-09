@@ -15,8 +15,9 @@
       el.style.backgroundImage = 'url("' + el.dataset.background + '")';
       el.removeAttribute("data-background");
     });
-    section.querySelectorAll("image[data-src]").forEach(function (el) {
-      el.setAttribute("href", el.dataset.src);
+    section.querySelectorAll("[data-src]").forEach(function (el) {
+      if (el.tagName.toLowerCase() === "img") el.src = el.dataset.src;
+      else el.setAttribute("href", el.dataset.src);
       el.removeAttribute("data-src");
     });
   }
@@ -40,7 +41,7 @@
   var heroImage = document.querySelector(".env-card img");
   var warmQueue = heroImage.decode ? heroImage.decode().catch(function () {}) : Promise.resolve();
   panels.forEach(function (panel) {
-    panel.querySelectorAll("[data-background], image[data-src]").forEach(function (el) {
+    panel.querySelectorAll("[data-background], [data-src]").forEach(function (el) {
       var src = el.dataset.background || el.dataset.src;
       warmQueue = warmQueue.then(function () {
         var image = new Image();
@@ -156,21 +157,40 @@
   // ---------- Page switching ----------
   var opening = false, openingTimer = null;
   var card = envelope.querySelector(".env-card");
+  var flap = envelope.querySelector(".flap-layer");
+  var scenePrepared = false, sceneTimer = null;
+
+  function prepareOpeningScene() {
+    if (scenePrepared) return;
+    scenePrepared = true;
+    envelope.classList.add("is-prepared");
+    invitation.classList.add("is-prepared");
+    invitation.inert = true;
+  }
+
+  function queueOpeningScene() {
+    clearTimeout(sceneTimer);
+    sceneTimer = setTimeout(function () {
+      if (!opening && envelope.classList.contains("is-active")) prepareOpeningScene();
+    }, 200);
+  }
 
   function show(page) {
     var inv = page === "invitation";
     clearTimeout(openingTimer);
+    clearTimeout(sceneTimer);
+    scenePrepared = false;
     opening = false;
     // Keep transitions disabled until the next opening. Flush the closed state
     // before revealing the envelope so no stale animation can paint behind the map.
     envelope.classList.add("no-anim");
-    envelope.classList.remove("is-opening", "is-leaving");
+    envelope.classList.remove("is-opening", "is-leaving", "is-prepared");
     // Apply the reset while Safari cannot paint the envelope.
     envelope.style.visibility = "hidden";
     void getComputedStyle(card).transform;
-    void getComputedStyle(envelope.querySelector(".flap-layer")).transform;
+    void getComputedStyle(flap).transform;
     envelope.classList.toggle("is-active", !inv);
-    invitation.classList.remove("is-revealing");
+    invitation.classList.remove("is-revealing", "is-prepared");
     invitation.classList.toggle("is-active", inv);
     void envelope.offsetWidth;
     envelope.style.visibility = "";
@@ -178,7 +198,7 @@
     invitation.inert = !inv;
     window.scrollTo(0, 0);
     if (inv) { if (!playing) armFirstInteraction(); }
-    else pauseMusic(true);
+    else { pauseMusic(true); queueOpeningScene(); }
   }
 
   function route() {
@@ -195,12 +215,17 @@
   document.getElementById("open-invitation").addEventListener("click", function (e) {
     e.preventDefault();
     if (opening) return;
+    prepareOpeningScene();
     playMusic(); // inside the click so the browser allows sound
     opening = true;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { openInvitation(); return; }
     envelope.classList.remove("no-anim");
+    // Flush the visible, prepared flap rather than a display:none card.
+    // Matching perspective/rotation functions let WebKit interpolate the hinge.
+    void getComputedStyle(flap).transform;
     void card.offsetWidth;
     // Render the destination underneath the envelope for the final crossfade.
+    invitation.classList.remove("is-prepared");
     invitation.classList.add("is-active", "is-revealing");
     invitation.inert = true;
     envelope.classList.add("is-opening");

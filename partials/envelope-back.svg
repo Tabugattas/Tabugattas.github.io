@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="envelope env-back" viewBox="0 0 1568 788" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="paper" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.06 0.08" numOctaves="3" seed="7" result="n"/>
+            <feDiffuseLighting in="n" lighting-color="#fff" surfaceScale="0.7" result="l">
+              <feDistantLight azimuth="225" elevation="55"/>
+            </feDiffuseLighting>
+            <feComposite in="l" in2="SourceGraphic" operator="in" result="lit"/>
+            <feComponentTransfer in="lit" result="soft"><feFuncR type="linear" slope=".35" intercept=".65"/><feFuncG type="linear" slope=".35" intercept=".65"/><feFuncB type="linear" slope=".35" intercept=".65"/></feComponentTransfer>
+            <feBlend in="SourceGraphic" in2="soft" mode="multiply"/>
+          </filter>
+          <filter id="flapShadow" x="-5%" y="-5%" width="110%" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b"/>
+            <feOffset dy="9" result="o"/>
+            <feFlood flood-color="#8c6c3c" flood-opacity="0.95"/>
+            <feComposite in2="o" operator="in" result="s"/>
+            <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        
+          <linearGradient id="innerShade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cbc4b8"/>
+            <stop offset="1" stop-color="#e2ddd4"/>
+          </linearGradient>
+          <filter id="pocketShadow" x="-5%" y="-30%" width="110%" height="140%">
+            <feDropShadow dx="0" dy="-4" stdDeviation="5" flood-color="#6f5f47" flood-opacity=".35"/>
+          </filter>
+        </defs>
+        <rect width="1568" height="788" fill="url(#innerShade)"/>
+        <rect width="1568" height="788" fill="#d4cfc6" opacity=".5" filter="url(#paper)"/>
+      </svg>

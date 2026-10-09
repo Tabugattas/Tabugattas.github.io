@@ -62,7 +62,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* One timeline: lift, advance, then blend into the live invitation. */
 #page-envelope.is-opening .env-card{display:flex;visibility:visible;will-change:transform;animation:cardOpen 4.8s linear .9s both}
 #page-envelope.is-opening{animation:envelopeHandoff 1.4s linear 4.3s forwards}
-#page-invitation.is-revealing{animation:none}
+/* Pre-layout the opening screen behind the opaque envelope. During the
+   handoff its position stays identical; normal scrolling starts afterward. */
+#page-invitation.is-prepared,#page-invitation.is-revealing{
+  display:block;position:fixed;inset:0;overflow:hidden;pointer-events:none
+}
+#page-envelope.is-prepared .flap-layer{transform:perspective(2200px) rotateX(0deg);will-change:transform}
+#page-envelope.is-prepared .env-card{display:flex;will-change:transform}
+#page-envelope.is-prepared.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg)}
 @keyframes cardOpen{
   0%{transform:translate(-50%,108.06%) scale(1)}
   35.2%{transform:translate(-50%,0) scale(1)}
