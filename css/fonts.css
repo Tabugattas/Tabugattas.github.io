@@ -1,0 +1,92 @@
+/* Latin subsets of Google Fonts; see fonts/LICENSES.txt. */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/cormorant-garamond-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(../fonts/cormorant-garamond-500.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(../fonts/cormorant-sc-500.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(../fonts/cormorant-sc-600.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(../fonts/cormorant-sc-700.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Gilda Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/gilda-display-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Great Vibes';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/great-vibes-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Herr Von Muellerhoff';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/herr-von-muellerhoff-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Hurricane';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/hurricane-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Ms Madi';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/ms-madi-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Pinyon Script';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/pinyon-script-400.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(../fonts/playfair-display-800.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Tinos';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/tinos-400.woff2) format('woff2');
+}

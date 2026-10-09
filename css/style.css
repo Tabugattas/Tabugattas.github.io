@@ -4,23 +4,25 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 .page{display:none}
-.page.is-active{display:block;animation:fadeIn .3s ease both}
-#page-envelope:not(.is-active){display:block;opacity:0;pointer-events:none}
+.page.is-active{display:block}
+#page-envelope:not(.is-active){display:none}
 #page-envelope.is-active{animation:none}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ================= PAGE 1 : ENVELOPE ================= */
 #page-envelope{z-index:10;position:fixed;inset:0;overflow:hidden;background:#e8e6e2}
 .stage{
   position:absolute;left:50%;top:50%;
-  width:max(100vw, calc(100vh * 1568 / 788));
+  width:max(100vw, calc(100svh * 1568 / 788));
   aspect-ratio:1568/788;
   transform:translate(-50%,-50%);
   container-type:size;
 }
 .envelope{position:absolute;inset:0;width:100%;height:100%}
+.env-back{z-index:0}
+.env-front{z-index:2}
+.flap-layer{z-index:4}
 .world-map{
-  position:absolute;left:24.1%;top:68.3%;width:49.9%;
+  z-index:3;position:absolute;left:24.1%;top:68.3%;width:49.9%;
   filter:drop-shadow(-1px -1px 0 rgba(255,255,255,.9)) drop-shadow(1px 1.5px 1px rgba(110,95,70,.35));
   opacity:.95;pointer-events:none;
   clip-path:inset(0 4% 0 4%);
@@ -43,12 +45,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* envelope opening */
 .env-flap{overflow:visible}
 .flap-layer{position:absolute;inset:0;transform-origin:50% 0;
-            transform:perspective(2200px) rotateX(0deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;will-change:transform;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
+            transform:none;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform 2s cubic-bezier(.55,.05,.35,1) .45s}
 .env-card{
   position:absolute;left:50%;top:5cqh;height:62cqh;aspect-ratio:.72;max-width:88vw;
-  transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;will-change:transform;
-  display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
-  will-change:transform;
+  z-index:1;visibility:hidden;transform:translate(-50%,108.06%);background:#fbfaf7;padding:1.4cqh;
+  display:none;flex-direction:column;box-shadow:0 2px 12px rgba(80,60,30,.2);
 }
 .env-card img{display:block;width:100%;flex:1 1 auto;min-height:0;object-fit:cover}
 .env-card-text{display:flex;flex-direction:column;align-items:center;padding:2cqh 0 1cqh;color:#204a86;text-align:center}
@@ -57,14 +58,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ec-dash{display:block;height:2px;border-radius:2px;background:linear-gradient(90deg,#d9b56a,#f3dc9c 50%,#c99a4c);margin:.9cqh 0}
 .ec-date{font:500 3cqh/1 "Cormorant SC",serif;margin-top:1cqh;letter-spacing:.02em}
 #page-envelope.is-opening .seal-link{transform:scale(.85);opacity:0;pointer-events:none;transition:transform .45s ease,opacity .45s ease}
-#page-envelope.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg)}
+#page-envelope.is-opening .flap-layer{transform:perspective(2200px) rotateX(180deg);will-change:transform}
 /* One timeline: lift, advance, then blend into the live invitation. */
-#page-envelope.is-opening .env-card{animation:cardOpen 2.6s linear .9s both}
-#page-envelope.is-opening{animation:envelopeHandoff .35s linear 3.15s forwards}
+#page-envelope.is-opening .env-card{display:flex;visibility:visible;will-change:transform;animation:cardOpen 4.8s linear .9s both}
+#page-envelope.is-opening{animation:envelopeHandoff 1.4s linear 4.3s forwards}
 #page-invitation.is-revealing{animation:none}
 @keyframes cardOpen{
   0%{transform:translate(-50%,108.06%) scale(1)}
-  65%{transform:translate(-50%,0) scale(1)}
+  35.2%{transform:translate(-50%,0) scale(1)}
   100%{transform:translate(-50%,0) scale(1.2)}
 }
 @keyframes envelopeHandoff{from{opacity:1}to{opacity:0}}
@@ -161,18 +162,17 @@ section{position:relative;overflow:hidden}
 @media (max-width:1100px){#page-invitation{--hshift:calc(var(--hu) * -.225)}}
 @media (max-width:600px){#page-invitation{--hu:calc(100vw / 2.2);--hshift:calc(var(--hu) * -.27)}}
 
-/* Each section fills the visible viewport on phones and desktops. Fit the
-   artwork within that space without cropping the card or stretching its text. */
-#page-invitation .hero{
-  min-height:100vh;height:100vh;min-height:100dvh;height:100dvh;
-  --hu:min(540px, calc(100vw / 2.1), calc(100dvh / 1.85))
-}
-#page-invitation .hero-photo{top:50%;height:calc(var(--hu) * 1.85);transform:translateY(-50%)}
-#page-invitation .panel{
-  min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;
-  --u:min(100vw, 540px, calc(100dvh / 1.92))
-}
-#page-invitation .passport{--u:min(100vw, 540px, calc(100dvh / 2.04))}
-@media (max-width:600px){
-  #page-invitation .hero{--hu:min(calc(100vw / 2.2), calc(100dvh / 1.85))}
+/* Desktop keeps a full section per viewport; phones use the original
+   natural card heights and compact Save the Date row. */
+@media (min-width:601px){
+  #page-invitation .hero{
+    min-height:100vh;height:100vh;min-height:100svh;height:100svh;
+    --hu:min(540px, calc(100vw / 2.1), calc(100svh / 1.85))
+  }
+  #page-invitation .hero-photo{top:50%;height:calc(var(--hu) * 1.85);transform:translateY(-50%)}
+  #page-invitation .panel{
+    min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;
+    --u:min(100vw, 540px, calc(100svh / 1.92))
+  }
+  #page-invitation .passport{--u:min(100vw, 540px, calc(100svh / 2.04))}
 }

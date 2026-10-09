@@ -7,7 +7,7 @@
   ["hero-background", "hero-photo"].forEach(function (name) {
     var image = new Image();
     image.fetchPriority = "high";
-    image.src = "images/" + name + ".jpg";
+    image.src = "images/" + name + ".webp";
   });
 
   function loadSectionAssets(section) {
@@ -29,11 +29,28 @@
         loadSectionAssets(entry.target);
         assetObserver.unobserve(entry.target);
       });
-    }, { rootMargin: "100% 0px" });
+    }, { rootMargin: Math.max(window.innerHeight, 800) + "px 0px" });
     panels.forEach(function (panel) { assetObserver.observe(panel); });
   } else {
     panels.forEach(loadSectionAssets);
   }
+
+  // Warm later sections in order after the hero decodes, rather than waiting
+  // for a fast scroll to discover them. One decode at a time keeps Safari responsive.
+  var heroImage = document.querySelector(".env-card img");
+  var warmQueue = heroImage.decode ? heroImage.decode().catch(function () {}) : Promise.resolve();
+  panels.forEach(function (panel) {
+    panel.querySelectorAll("[data-background], image[data-src]").forEach(function (el) {
+      var src = el.dataset.background || el.dataset.src;
+      warmQueue = warmQueue.then(function () {
+        var image = new Image();
+        image.fetchPriority = "low";
+        image.src = src;
+        return image.decode ? image.decode().catch(function () {}) : Promise.resolve();
+      });
+    });
+    warmQueue = warmQueue.then(function () { loadSectionAssets(panel); });
+  });
 
   var envelope = document.getElementById("page-envelope");
   var invitation = document.getElementById("page-invitation");
@@ -148,10 +165,15 @@
     // before revealing the envelope so no stale animation can paint behind the map.
     envelope.classList.add("no-anim");
     envelope.classList.remove("is-opening", "is-leaving");
+    // Apply the reset while Safari cannot paint the envelope.
+    envelope.style.visibility = "hidden";
+    void getComputedStyle(card).transform;
+    void getComputedStyle(envelope.querySelector(".flap-layer")).transform;
     envelope.classList.toggle("is-active", !inv);
     invitation.classList.remove("is-revealing");
     invitation.classList.toggle("is-active", inv);
-    void card.offsetWidth;
+    void envelope.offsetWidth;
+    envelope.style.visibility = "";
     envelope.inert = inv;
     invitation.inert = !inv;
     window.scrollTo(0, 0);
@@ -183,11 +205,13 @@
     invitation.inert = true;
     envelope.classList.add("is-opening");
     // Fallback for browsers that fail to deliver animationend.
-    openingTimer = setTimeout(openInvitation, 3800);
+    var animation = getComputedStyle(card);
+    var duration = parseFloat(animation.animationDuration) + parseFloat(animation.animationDelay);
+    openingTimer = setTimeout(openInvitation, (duration * 1000) + 300);
   });
 
-  card.addEventListener("animationend", function (e) {
-    if (e.animationName === "cardOpen") openInvitation();
+  envelope.addEventListener("animationend", function (e) {
+    if (e.target === envelope && e.animationName === "envelopeHandoff") openInvitation();
   });
 
   document.getElementById("go-back").addEventListener("click", function (e) {
