@@ -10,11 +10,11 @@ window.SITE_CONFIG = {
 
   // Music that starts when the invitation (page 2) opens.
   // Option A (recommended, most reliable on iPhone): put an MP3 in /audio and point to it here.
-  musicFile: "audio/song.mp3",
+  musicFile: "audio/indzanic-avel.mp3",
 
   // Option B: a YouTube video ID or full link (e.g. "https://youtu.be/XXXXXXXXXXX").
   // If set, it is used instead of musicFile.
-  youtube: "https://youtu.be/d2TIhtABkGg",
+  youtube: "",
 
   musicVolume: 0.7
 };
